@@ -6,7 +6,11 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# local gem installation
 Gemfile.lock
+.ruby-version
+.ruby-gemset
 
 # rspec failure tracking
 .rspec_status
