@@ -1,0 +1,16 @@
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Metrics/BlockLength:
+  Exclude:
+    - "*.gemspec"
+
+Style/FrozenStringLiteralComment:
+  Exclude:
+  - "Gemfile"
+  - "Rakefile"
+  - "bin/*"
+  - "spec/**/*.rb"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
