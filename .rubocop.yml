@@ -8,6 +8,9 @@ Metrics/BlockLength:
   Exclude:
     - "*.gemspec"
 
+Style/FormatString:
+  EnforcedStyle: percent
+
 Style/FrozenStringLiteralComment:
   Exclude:
   - "Gemfile"

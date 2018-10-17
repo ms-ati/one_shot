@@ -7,44 +7,32 @@ module OneShot
   #
   # Note: looking up is eager operation that consumes all earlier values.
   class ArrayLikeEnumerator < EnumeratorDecorator
+    ERR_IDX_NEG = "Negative index not supported: %s"
+    ERR_IDX_OLD = "Index already read: %s (last read: %s)"
+
     def initialize(enumerator)
-      @index_read = -1
+      @last_idx = -1
 
       enumerator_tracking_index = enumerator.map do |v|
-        @index_read += 1
+        @last_idx += 1
         v
       end
 
       super(enumerator_tracking_index)
     end
 
-    def [](index)
+    def [](idx)
+      raise ArgumentError, ERR_IDX_NEG % [idx] if idx.negative?
+      raise IndexOldError, ERR_IDX_OLD % [idx, @last_idx] if idx <= @last_idx
 
-
-      _ = enumerator.next while @index_read < index - 1
+      _ = enumerator.next while @last_idx < idx - 1
       enumerator.next
     rescue StopIteration
       nil
     end
-
-    private
-
-    def raise_if_negative(index)
-      if index.negative?
-        raise ArgumentError,
-              "Negative index not supported: #{index}"
-      end
-    end
-
-    def raise_if_already_read(index)
-      if index <= @index_read
-        raise IndexAlreadyReadError,
-              "Index already read: #{index} (last read: #{@index_read})"
-      end
-    end
   end
 
-  # Raised when a previously read index is accessed in an ArrayLikeEnumerator
-  class IndexAlreadyReadError < IndexError
+  # Raised when an index already passed is accessed in an ArrayLikeEnumerator
+  class IndexOldError < IndexError
   end
 end
