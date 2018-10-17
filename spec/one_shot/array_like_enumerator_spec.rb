@@ -6,7 +6,7 @@ RSpec.describe OneShot::ArrayLikeEnumerator do
 
   describe "#[]" do
     subject { super()[index] }
-    let(:enumerator) { (0..5).lazy }
+    let(:enumerator) { ("a".."z").lazy }
 
     context "with negative index" do
       let(:index) { -1 }

@@ -4,7 +4,7 @@ module OneShot
   #
   # Base class for Decorators of Enumerator::Lazy
   #
-  class EnumeratorDecorator < SimpleDelegator
+  class EnumeratorDecorator < DelegateClass(Enumerator::Lazy)
     def initialize(enumerator)
       unless enumerator.is_a? Enumerator::Lazy
         raise ArgumentError, "Not an Enumerator::Lazy: #{enumerator.inspect}"
@@ -24,5 +24,7 @@ module OneShot
     # Mark SimpleDelegator#__setobj__ as private
     #
     private :__setobj__ # rubocop:disable Style/AccessModifierDeclarations
+
+    undef_method :rewind
   end
 end

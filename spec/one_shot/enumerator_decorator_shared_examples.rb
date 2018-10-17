@@ -22,4 +22,14 @@ RSpec.shared_examples "an_enumerator_decorator" do
       is_expected.to be true
     end
   end
+
+  describe "#rewind" do
+    subject { super().rewind }
+    it { expect { subject }.to raise_error(NoMethodError) }
+
+    context "in #respond_to?" do
+      subject { instance.respond_to?(:rewind) }
+      it { is_expected.to be false }
+    end
+  end
 end
