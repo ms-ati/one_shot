@@ -14,5 +14,10 @@ RSpec.describe OneShot::ArrayLikeEnumerator do
     end
   end
 
+  describe "#inspect" do
+    subject { super().inspect }
+    it { is_expected.to start_with("#<ArrayLikeEnumerator") }
+  end
+
   it_behaves_like "an_enumerator_decorator"
 end

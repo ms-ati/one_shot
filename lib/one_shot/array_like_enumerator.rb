@@ -30,6 +30,10 @@ module OneShot
     rescue StopIteration
       nil
     end
+
+    def inspect
+      super.sub(/\A#<Enumerator/, "#<ArrayLikeEnumerator")
+    end
   end
 
   # Raised when an index already passed is accessed in an ArrayLikeEnumerator
