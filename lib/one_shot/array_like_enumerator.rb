@@ -1,38 +1,50 @@
 # frozen_string_literal: true
 
+require_relative "enumerator_decorator"
+
 module OneShot
   # Decorates an Enumerator::Lazy with an Array-like lookup interface.
   #
   # Note: looking up is eager operation that consumes all earlier values.
-  class ArrayLikeEnumerator < SimpleDelegator
+  class ArrayLikeEnumerator < EnumeratorDecorator
     def initialize(enumerator)
-      unless enumerator.is_a? Enumerator::Lazy
-        raise ArgumentError, "Enumerator::Lazy required: #{enumerator.inspect}"
-      end
+      @index_read = -1
 
-      @index_seen = -1
-
-      @enumerator = enumerator.map do |v|
-        @index_seen += 1
+      enumerator_tracking_index = enumerator.map do |v|
+        @index_read += 1
         v
       end
 
-      super(@enumerator)
+      super(enumerator_tracking_index)
     end
 
     def [](index)
-      if index.negative?
-        raise ArgumentError, "Negative index not supported: #{index}"
-      end
 
-      if index <= @index_seen
-        raise ArgumentError, "Index already seen: #{index} (#{@index_seen})"
-      end
 
-      _ = @enumerator.next while @index_seen < index - 1
-      @enumerator.next
+      _ = enumerator.next while @index_read < index - 1
+      enumerator.next
     rescue StopIteration
       nil
     end
+
+    private
+
+    def raise_if_negative(index)
+      if index.negative?
+        raise ArgumentError,
+              "Negative index not supported: #{index}"
+      end
+    end
+
+    def raise_if_already_read(index)
+      if index <= @index_read
+        raise IndexAlreadyReadError,
+              "Index already read: #{index} (last read: #{@index_read})"
+      end
+    end
+  end
+
+  # Raised when a previously read index is accessed in an ArrayLikeEnumerator
+  class IndexAlreadyReadError < IndexError
   end
 end
